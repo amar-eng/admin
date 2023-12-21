@@ -17,10 +17,7 @@ export async function GET(
         id: params.productId,
       },
       include: {
-        images: true,
         category: true,
-        size: true,
-        color: true,
       },
     });
 
@@ -79,20 +76,7 @@ export async function PATCH(
 
     const body = await req.json();
 
-    const {
-      name,
-      price,
-      categoryId,
-      colorId,
-      sizeId,
-      images,
-      isFeatured,
-      isArchived,
-      brand,
-      longevity,
-      season,
-      countInStock,
-    } = body;
+    const { name, price, categoryId } = body;
 
     if (!userId) {
       return new NextResponse('Unauthenticated', { status: 403 });
@@ -106,36 +90,12 @@ export async function PATCH(
       return new NextResponse('Name is required', { status: 400 });
     }
 
-    if (!images || !images.length) {
-      return new NextResponse('Images are required', { status: 400 });
-    }
-
     if (!price) {
       return new NextResponse('Price is required', { status: 400 });
-    }
-    if (!brand) {
-      return new NextResponse('Brand is required', { status: 400 });
-    }
-    if (!longevity) {
-      return new NextResponse('Longevity is required', { status: 400 });
-    }
-    if (!season) {
-      return new NextResponse('Season is required', { status: 400 });
-    }
-    if (!countInStock) {
-      return new NextResponse('CountInStock is required', { status: 400 });
     }
 
     if (!categoryId) {
       return new NextResponse('Category id is required', { status: 400 });
-    }
-
-    if (!colorId) {
-      return new NextResponse('Color id is required', { status: 400 });
-    }
-
-    if (!sizeId) {
-      return new NextResponse('Size id is required', { status: 400 });
     }
 
     const storeByUserId = await prismadb.store.findFirst({
@@ -157,17 +117,6 @@ export async function PATCH(
         name,
         price,
         categoryId,
-        colorId,
-        sizeId,
-        brand,
-        longevity,
-        season,
-        countInStock,
-        images: {
-          deleteMany: {},
-        },
-        isFeatured,
-        isArchived,
       },
     });
 
@@ -175,13 +124,7 @@ export async function PATCH(
       where: {
         id: params.productId,
       },
-      data: {
-        images: {
-          createMany: {
-            data: [...images.map((image: { url: string }) => image)],
-          },
-        },
-      },
+      data: {},
     });
 
     return NextResponse.json(product);

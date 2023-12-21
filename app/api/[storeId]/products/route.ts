@@ -12,21 +12,7 @@ export async function POST(
 
     const body = await req.json();
 
-    const {
-      name,
-      price,
-      categoryId,
-      colorId,
-      sizeId,
-      images,
-      isFeatured,
-      isArchived,
-      brand,
-      longevity,
-      season,
-      countInStock,
-      description,
-    } = body;
+    const { name, price, categoryId } = body;
 
     if (!userId) {
       return new NextResponse('Unauthenticated', { status: 403 });
@@ -36,39 +22,8 @@ export async function POST(
       return new NextResponse('Name is required', { status: 400 });
     }
 
-    if (!images || !images.length) {
-      return new NextResponse('Images are required', { status: 400 });
-    }
-
     if (!price) {
       return new NextResponse('Price is required', { status: 400 });
-    }
-    if (!brand) {
-      return new NextResponse('Brand is required', { status: 400 });
-    }
-    if (!description) {
-      return new NextResponse('Description is required', { status: 400 });
-    }
-    if (!longevity) {
-      return new NextResponse('Longevity is required', { status: 400 });
-    }
-    if (!season) {
-      return new NextResponse('Season is required', { status: 400 });
-    }
-    if (!countInStock) {
-      return new NextResponse('CountInStock is required', { status: 400 });
-    }
-
-    if (!categoryId) {
-      return new NextResponse('Category id is required', { status: 400 });
-    }
-
-    if (!colorId) {
-      return new NextResponse('Color id is required', { status: 400 });
-    }
-
-    if (!sizeId) {
-      return new NextResponse('Size id is required', { status: 400 });
     }
 
     if (!params.storeId) {
@@ -90,22 +45,10 @@ export async function POST(
       data: {
         name,
         price,
-        isFeatured,
-        isArchived,
+
         categoryId,
-        colorId,
-        sizeId,
-        brand,
-        longevity,
-        season,
-        countInStock,
+
         storeId: params.storeId,
-        description,
-        images: {
-          createMany: {
-            data: [...images.map((image: { url: string }) => image)],
-          },
-        },
       },
     });
 
@@ -135,16 +78,9 @@ export async function GET(
       where: {
         storeId: params.storeId,
         categoryId,
-        colorId,
-        sizeId,
-        isFeatured: isFeatured ? true : undefined,
-        isArchived: false,
       },
       include: {
-        images: true,
         category: true,
-        color: true,
-        size: true,
       },
       orderBy: {
         createdAt: 'desc',
